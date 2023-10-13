@@ -79,7 +79,7 @@ except Exception as error:
     crayon(error,'red')
     timeout(9000)
     restart_file()
-finally:
+finally: 
     restart_file()
 restart_file()
 page=0
