@@ -4,6 +4,7 @@ import pandas as pd
 import schedule
 lockspeed,speed,rotdegrees=True,20,5
 trainingWheelsOff=False
+telloRun=1
 """drone controls:
     ascend/descend q/w
     fwd/back "up"/"down"
@@ -14,7 +15,51 @@ trainingWheelsOff=False
     toggle speed "space"
 
 """
-while 1:
+
+def drone_dynamics():
+    gyro={'pitch':tello.get_pitch(),
+        'roll':tello.get_roll(),
+        'yaw':tello.get_yaw(),
+        'height':tello.get_height()}
+    speed={'speed x':tello.get_speed_x(),
+        'speed y':tello.get_speed_y(),
+        'speed z':tello.get_speed_z()}
+    accel={'acceleration x':tello.get_acceleration_x(),
+        'acceleration y':tello.get_acceleration_y(),
+        'acceleration z':tello.get_acceleration_z()}
+    missionDist={'x dim':tello.get_mission_pad_distance_x(),
+                 'y dim':tello.get_mission_pad_distance_y(),
+                 'z dim':tello.get_mission_pad_distance_z()}
+    return gyro,speed,accel,missionDist
+
+def land_and_check():
+    height=tello.get_height()
+    tello.land()
+    drop_speed=tello.get_speed_z()
+    land_temp=tello.get_temperature()
+    droptime=height/drop_speed
+    time.sleep(droptime*1.05)
+    tello.turn_motor_on()
+    while land_temp>initial_state['amb temp']*1.15:
+        land_temp=tello.get_temperature()
+        time.sleep(5)
+    tello.turn_motor_off()
+    print('cooldown complete, current temp:',land_temp)
+
+if telloRun:
+    tello = Tello()
+    tello.connect()
+
+    initial_state={ 'Battery': tello.get_battery(),
+                'Baro':tello.get_barometer(),
+                'Height':tello.get_height(),
+                'amb temp':tello.get_temperature()
+                                                                }
+    print(f'Current State: {tello.get_current_state()}')
+    print(f'Battery: {tello.get_battery()}%')
+    print(tello.get_barometer())
+    print(tello.get_highest_temperature(), tello.get_lowest_temperature())
+while telloRun:
     if trainingWheelsOff:
         time.time()
         schedule.every(1).seconds.do(drone_dynamics)
@@ -79,14 +124,14 @@ while 1:
                 tello.flip(first_true_direction)
         else:
             if trainingWheelsOff:
-                move.tello(first_true_direction,speed)
+                tello.move(first_true_direction,speed)
                 if second_true_direction!=None:
-                    move.tello(second_true_direction,speed)
+                    tello.move(second_true_direction,speed)
                 if any(second_true_direction=='l' or first_true_direction=='l'):
                     
                     tello.rotate_counter_clockwise(rotdegrees)
                 elif any(second_true_direction=='r' or first_true_direction=='r'):
-                    tello.rotateclockwise(rotdegrees)
+                    tello.rotate_clockwise(rotdegrees)
             #else:
             #    print('move in direction:',first_true_direction,second_true_direction,'@ speed',speed)
     elif land:    
@@ -105,48 +150,3 @@ while 1:
     #if trainingWheelsOff:
     print(df,end="\033[F"*len(df))
     
-tello = Tello()
-tello.connect()
-
-
-initial_state={ 'Battery': tello.get_battery(),
-                'Baro':tello.get_barometer(),
-                'Height':tello.get_height(),
-                'amb temp':tello.get_temperature()
-                                                                }
-print(f'Current State: {tello.get_current_state()}')
-print(f'Battery: {tello.get_battery()}%')
-print(tello.get_barometer())
-print(tello.get_highest_temperature(), tello.get_lowest_temperature())
-
-def drone_dynamics():
-    gyro={'pitch':tello.get_pitch(),
-        'roll':tello.get_roll(),
-        'yaw':tello.get_yaw(),
-        'height':tello.get_height()}
-    speed={'speed x':tello.get_speed_x(),
-        'speed y':tello.get_speed_y(),
-        'speed z':tello.get_speed_z()}
-    accel={'acceleration x':tello.get_acceleration_x(),
-        'acceleration y':tello.get_acceleration_y(),
-        'acceleration z':tello.get_acceleration_z()}
-    #location={'x dim':,'y dim':,'z dim':tello.get_height()}
-    missionDist={'x dim':tello.get_mission_pad_distance_x(),
-                 'y dim':tello.get_mission_pad_distance_y(),
-                 'z dim':tello.get_mission_pad_distance_z()}
-    return gyro,speed,accel,missionDist
-
-def land_and_check():
-    height=tello.get_height()
-    tello.land()
-    drop_speed=tello.get_speed_z()
-    land_temp=tello.get_temperature()
-    droptime=height/drop_speed
-    time.sleep(droptime*1.05)
-    tello.turn_motor_on()
-    while land_temp>initial_state['amb temp']*1.15:
-        land_temp=tello.get_temperature()
-        time.sleep(5)
-    tello.turn_motor_off()
-    print('cooldown complete, current temp:',land_temp)
-
