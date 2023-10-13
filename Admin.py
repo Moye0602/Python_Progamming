@@ -1,19 +1,15 @@
-'''This file will serve as persoanlly built module of functoins'''
-'''first import other in-built python module that you may want to use'''
+'''This file will serve as persoanlly built module of functions'''
 import time,datetime
 import termcolor
 from pprint import pprint
 # import more as you add to this file
 '''the first couple will be for degugging and message output from our first session'''
 
-
-'''next, for debugging purpose while creating and testing functions in admin we make a condition to only run a 
-function here if this is the file that is executing the function'''
-#print()
-#print(__name__,'if we creat a condition that checks if this is true, we can use it as a verifier')
 def blank():
     print(' '*40,end='\r')
+########################################
 
+########################################
 def crayon(statement='>>here i am<<',color='yellow'):
     from termcolor import colored
     """Colorize text.
@@ -45,17 +41,16 @@ def crayon(statement='>>here i am<<',color='yellow'):
 ########################################
 
 ########################################
-def convert(time):
-    day = time // (60*60*24)
-    time = time % (24 * 3600)
-    hour = time // 3600
-    time %= 3600
-    minutes = time // 60
-    time %=60
-    seconds = time
-    return "%d:%d:%d:%d" % (day,hour, minutes, seconds)
-
 def timeout(Tminus):
+    def convert(ttime):
+        day = ttime // (60*60*24)
+        ttime = ttime % (24 * 3600)
+        hour = ttime // 3600
+        ttime %= 3600
+        minutes = ttime // 60
+        ttime %=60
+        seconds = ttime
+        return "%d:%d:%d:%d" % (day,hour, minutes, seconds)
     while 0<Tminus:
         crayon(['Timeout',convert(round(Tminus,2)) ,'seconds remaining                                  '])
         print(end="\033[F"*(1))
@@ -66,18 +61,25 @@ def timeout(Tminus):
 ########################################
 
 ########################################
-def restart_file():
+def restart_file(auto=False):
+    '''place at the end of a program either at the end of a loop or in an exception.
+    when called, press "y" to restart or 'n' to exit the program'''
     import gc,sys,subprocess
     import keyboard
-    blank()
-    print('press "y" to restart file')
-    try:
-        if keyboard.wait('y')==None:
-            subprocess.call(["cmd", "/c", "cls"])
-            subprocess.call([sys.executable] + sys.argv)
-            sys.exit() 
-    except KeyboardInterrupt:
-        crayon('User Stopped Program')
+    subprocess.call(["cmd", "/c", "cls"])
+    print('restart file? y/n ')
+    while 1:
+        try:
+            if auto==True or auto==False and keyboard.is_pressed('y'):
+                gc.collect()
+                subprocess.call([sys.executable] + sys.argv)
+                sys.exit() 
+            elif keyboard.is_pressed('n'):
+                crayon('User Stopped Program')
+                break
+        except KeyboardInterrupt:
+            crayon('Keyboard Interupt')
+            break
 ########################################
 
 ########################################
@@ -103,8 +105,8 @@ def file_backup(fileName,recover=False):
 ########################################
 
 def get_wifi():
-    from pprint import pprint
-    #print(errorcode)
+    """when this is ran on a machine, it will create a dictionary of all SSIDs and corresponding
+    password, at the completion, a file will be created with a time stamp"""
     import os
     import socket 
     import subprocess
@@ -147,7 +149,10 @@ def get_wifi():
 ########################################
 
 ########################################    
-def insideout(name):
+def internal_copy(name):
+    """ When writing to a file place this after all other writes have occured with the filename
+    This will make an entry at the end which cause the inital file created to create a copy of itself
+    in its current state when imported. This effectively makes the origin file create back ups of itself"""
     path=__file__.split('\\')
     path=('\\').join(path[:-1])+'\\'
     with open(path+name+'.py','a') as addto:
@@ -163,9 +168,8 @@ def insideout(name):
 ########################################
 
 if __name__=='__main__':
-    print('I am main and I will do the function')
-    crayon('words') #this will work
-    statement='words',32
+    print('I am main')
+    
 ########################################
 
 ########################################
