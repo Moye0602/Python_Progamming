@@ -3,7 +3,7 @@ import time,keyboard
 import pandas as pd
 import schedule
 lockspeed,speed,rotdegrees=True,20,5
-trainingWheelsOff=False
+trainingWheelsOff=0
 telloRun=1
 """drone controls:
     ascend/descend q/w
@@ -46,7 +46,7 @@ def land_and_check():
     tello.turn_motor_off()
     print('cooldown complete, current temp:',land_temp)
 
-if telloRun:
+if 0 and  telloRun and trainingWheelsOff==0:
     tello = Tello()
     tello.connect()
 
@@ -91,11 +91,11 @@ while telloRun:
     land=keyboard.is_pressed('3')
     LR={'l':left,'r':right}
     UD={'u':forward,'d':backwards}
-    user={'top':[ascend,left,rotLeft,takeoff,lockspeed],
-          'mid':[forward,flip,backwards,'XXXX',speedToggle],
-          'bot':[descend,right,rotRight,land,speed  ]}
+    user={'top':['ascend: '+str(ascend),'left: '+str(left),'rotLeft: '+str(rotLeft),'takeoff: '+str(takeoff),'lockspeed: '+str(lockspeed)],
+          'mid':['forward: '+str(forward),'flip: '+str(flip),'backwards: '+str(backwards),'XXXX','speedToggle: '+str(speedToggle)],
+          ' '*15+'bot':['descend: '+str(descend),'right: '+str(right),'rotRight: '+str(rotRight),'land: '+str(land),'speed: '+str(speed)]}
 
-#    user={'top':[ascend,left,flip,takeoff,lockspeed],
+#    user={'top':[ascend,left,flip,takeoff,lockspeed],aaaaaaaadaddaqqeeqqwwwwwsswaaassssdddddddssww
 #          'mid':[forward,'XXXX',backwards,'XXXX',speedToggle],
 #          'bot':[descend,right,'XXXX',land,speed  ]}
 
@@ -113,7 +113,7 @@ while telloRun:
                     second=UD
                 else:
                     second=LR
-                break
+                
         
         for dir in second:
             if second[dir] and dir!=first_true_direction:

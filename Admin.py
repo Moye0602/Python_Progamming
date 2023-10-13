@@ -70,7 +70,7 @@ def restart_file(auto=False):
     print('restart file? y/n ')
     while 1:
         try:
-            if auto==True or auto==False and keyboard.is_pressed('y'):
+            if any([auto==True or auto==False and keyboard.is_pressed('y'),keyboard.is_pressed('esc')]):
                 gc.collect()
                 subprocess.call([sys.executable] + sys.argv)
                 sys.exit() 
@@ -169,6 +169,10 @@ def internal_copy(name):
 
 if __name__=='__main__':
     print('I am main')
+    m=[
+        input('words'),
+        input('more words')
+    ]
     
 ########################################
 
