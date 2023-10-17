@@ -160,7 +160,7 @@ try:
                         ic(list(details.keys()))    
                     csv_writer = csv.DictWriter(iWannaWorkcsv, fieldnames = list(details.keys()) )
                     
-                    
+                      
                     csv_writer.writerow(job[id])
             blank()
             print('ID',id, 'of',pageMax*25,'stored')
