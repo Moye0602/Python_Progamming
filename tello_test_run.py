@@ -2,8 +2,9 @@ from djitellopy import Tello
 import time,keyboard
 import pandas as pd
 import schedule
+from Admin import *
 lockspeed,speed,rotdegrees=True,20,5
-trainingWheelsOff=0
+trainingWheelsOff=1
 telloRun=1
 """drone controls:
     ascend/descend q/w
@@ -17,6 +18,7 @@ telloRun=1
 """
 
 def drone_dynamics():
+    #replace gyro requests with one request "tello.query_attitude"
     gyro={'pitch':tello.get_pitch(),
         'roll':tello.get_roll(),
         'yaw':tello.get_yaw(),
@@ -46,8 +48,13 @@ def land_and_check():
     tello.turn_motor_off()
     print('cooldown complete, current temp:',land_temp)
 
-if 0 and  telloRun and trainingWheelsOff==0:
+if telloRun and trainingWheelsOff:
     tello = Tello()
+    SSID="60:60:1f:fd:0a:35"
+    PASS="FD0A35"
+    #tello.connect_to_wifi(SSID,PASS)
+    
+    #tello.
     tello.connect()
 
     initial_state={ 'Battery': tello.get_battery(),
@@ -60,93 +67,131 @@ if 0 and  telloRun and trainingWheelsOff==0:
     print(tello.get_barometer())
     print(tello.get_highest_temperature(), tello.get_lowest_temperature())
 while telloRun:
-    if trainingWheelsOff:
-        time.time()
-        schedule.every(1).seconds.do(drone_dynamics)
-        height=tello.get_height()
-        if tello.get_distance_tof()<40:
-            tello.move_back(20)
-    forward,backwards=keyboard.is_pressed('up'),keyboard.is_pressed('down')
-    rotLeft,rotRight=keyboard.is_pressed('a'),keyboard.is_pressed('d')
-    left,right=keyboard.is_pressed('left'),keyboard.is_pressed('right')
-    ascend,descend=keyboard.is_pressed('w'),keyboard.is_pressed('s')
-    speedToggle=keyboard.is_pressed('space')
-    
-    if speedToggle:
-        if lockspeed:
-            lockspeed=False          
-            speed=100    
-            rotdegrees=25       
-        else:
-            lockspeed=True
-            speed=20
-            rotdegrees=5
-        time.sleep(.15)# buffer needed to prevent rapid switching
+    try:
         if trainingWheelsOff:
-            tello.set_speed(speed)
-        
-    
-    flip=keyboard.is_pressed('1')
-    takeoff=keyboard.is_pressed('9')
-    land=keyboard.is_pressed('3')
-    LR={'l':left,'r':right}
-    UD={'u':forward,'d':backwards}
-    user={'top':['ascend: '+str(ascend),'left: '+str(left),'rotLeft: '+str(rotLeft),'takeoff: '+str(takeoff),'lockspeed: '+str(lockspeed)],
-          'mid':['forward: '+str(forward),'flip: '+str(flip),'backwards: '+str(backwards),'XXXX','speedToggle: '+str(speedToggle)],
-          ' '*15+'bot':['descend: '+str(descend),'right: '+str(right),'rotRight: '+str(rotRight),'land: '+str(land),'speed: '+str(speed)]}
+            time.time()
+            #schedule.every(1).seconds.do(drone_dynamics)
+            height=tello.get_height()
+            #print(height)
+            #if tello.get_distance_tof()<40:
+            #    tello.move_back(20)
+        forward,backwards=keyboard.is_pressed('up'),keyboard.is_pressed('down')
+        rotLeft,rotRight=keyboard.is_pressed('a'),keyboard.is_pressed('d')
+        left,right=keyboard.is_pressed('left'),keyboard.is_pressed('right')
+        ascend,descend=keyboard.is_pressed('w'),keyboard.is_pressed('s')
+        speedToggle=keyboard.is_pressed('space')
+        lr, fb, ud, yv = 0, 0, 0, 0
+        speed = 20
 
-#    user={'top':[ascend,left,flip,takeoff,lockspeed],aaaaaaaadaddaqqeeqqwwwwwsswaaassssdddddddssww
-#          'mid':[forward,'XXXX',backwards,'XXXX',speedToggle],
-#          'bot':[descend,right,'XXXX',land,speed  ]}
+        if keyboard.is_pressed("left"):
+            lr = -speed
+        elif keyboard.is_pressed("right"):
+            lr = speed
 
+        if keyboard.is_pressed("up"):
+            fb = speed
+        elif keyboard.is_pressed("down"):
+            fb = -speed
 
-    #print('l:',left,'r:',right,'u:',forward,'d:',backwards,'flip:',flip)
-    if any([left , right , forward , backwards]):
+        if keyboard.is_pressed("w"):
+            ud = speed
+        elif keyboard.is_pressed("s"):
+            ud = -speed
+
+        if keyboard.is_pressed("a"):
+            yv = -speed
+        elif keyboard.is_pressed("d"):
+            yv = speed
         
-        direction={'l':left,'r':right,'u':forward,'d':backwards}
-        first_true_direction = None
-        second_true_direction=None
-        for dir in direction:
-            if direction[dir] :
-                first_true_direction=dir
-                if first_true_direction in LR:
-                    second=UD
-                else:
-                    second=LR
-                
-        
-        for dir in second:
-            if second[dir] and dir!=first_true_direction:
-                second_true_direction=dir
-                break
-        if flip :
+        if speedToggle:
+            if lockspeed:
+                lockspeed=False          
+                speed=100    
+                rotdegrees=25       
+            else:
+                lockspeed=True
+                speed=20
+                rotdegrees=5
+            time.sleep(.15)# buffer needed to prevent rapid switching
             if trainingWheelsOff:
-                tello.flip(first_true_direction)
-        else:
-            if trainingWheelsOff:
-                tello.move(first_true_direction,speed)
-                if second_true_direction!=None:
-                    tello.move(second_true_direction,speed)
-                if any(second_true_direction=='l' or first_true_direction=='l'):
+                tello.set_speed(speed)
+            
+        
+        flip=keyboard.is_pressed('1')
+        takeoff=keyboard.is_pressed('9')
+        land=keyboard.is_pressed('3')
+        LR={'left':left,'right':right}
+        UD={'forward':forward,'back':backwards}
+        user={'top':['ascend: '+str(ascend),'left: '+str(left),'rotLeft: '+str(rotLeft),'takeoff: '+str(takeoff),'lockspeed: '+str(lockspeed)],
+            'mid':['forward: '+str(forward),'flip: '+str(flip),'backwards: '+str(backwards),'XXXX','speedToggle: '+str(speedToggle)],
+            ' '*15+'bot':['descend: '+str(descend),'right: '+str(right),'rotRight: '+str(rotRight),'land: '+str(land),'speed: '+str(speed)]}
+
+    #    user={'top':[ascend,left,flip,takeoff,lockspeed],aaaaaaaadaddaqqeeqqwwwwwsswaaassssdddddddssww
+    #          'mid':[forward,'XXXX',backwards,'XXXX',speedToggle],
+    #          'bot':[descend,right,'XXXX',land,speed  ]}
+
+
+        #print('l:',left,'r:',right,'u:',forward,'d:',backwards,'flip:',flip)
+        if any([left , right , forward , backwards]):
+            
+            direction={'left':left,'right':right,'forward':forward,'back':backwards}
+            first_true_direction = None
+            second_true_direction=None
+            for dir in direction:
+                if direction[dir] :
+                    first_true_direction=dir
+                    if first_true_direction in LR:
+                        second=UD
+                    else:
+                        second=LR
                     
-                    tello.rotate_counter_clockwise(rotdegrees)
-                elif any(second_true_direction=='r' or first_true_direction=='r'):
-                    tello.rotate_clockwise(rotdegrees)
-            #else:
-            #    print('move in direction:',first_true_direction,second_true_direction,'@ speed',speed)
-    elif land:    
-        if trainingWheelsOff:
-            print('land_and_check()')#3
-        else:
-            print('landing drone')
-        break
-    elif takeoff:
-        if trainingWheelsOff:
-            tello.takeoff()
-        else:
-            print('tello.takeoff()')#9
+            
+            for dir in second:
+                if second[dir] and dir!=first_true_direction:
+                    second_true_direction=dir
+                    break
+            if flip :
+                if trainingWheelsOff:
+                    tello.flip(first_true_direction)
+            else:
+                if trainingWheelsOff:
+                    if 0:
+                        if first_true_direction or second_true_direction=='forward':
+                            tello.move_forward(speed)
+                        if first_true_direction or second_true_direction=='back':
+                            tello.move_back(speed)
+                        if first_true_direction or second_true_direction=='left':
+                            tello.move_left(speed)
+                        if first_true_direction or second_true_direction=='right':
+                            tello.move_right(speed)
+                    
+                    tello.move(first_true_direction,speed)
+                    if second_true_direction!=None:
+                        tello.move(second_true_direction,speed)
+                    if any(second_true_direction=='left' or first_true_direction=='left'):
+                        
+                        tello.rotate_counter_clockwise(rotdegrees)
+                    elif any(second_true_direction=='right' or first_true_direction=='right'):
+                        tello.rotate_clockwise(rotdegrees)
+                    tello.send_rc_control(lr, fb, ud, yv)
+                #else:
+                #    print('move in direction:',first_true_direction,second_true_direction,'@ speed',speed)
+        elif land:    
+            if trainingWheelsOff:
+                print('land_and_check()')#3
+            else:
+                print('landing drone')
+            break
+        elif takeoff:
+            if trainingWheelsOff:
+                tello.takeoff()
+            else:
+                print('tello.takeoff()')#9
 
-    df = pd.DataFrame(user)
-    #if trainingWheelsOff:
-    print(df,end="\033[F"*len(df))
+        df = pd.DataFrame(user)
+        #if trainingWheelsOff:
+        #    print(df,end="\033[F"*len(df))
+    except :# Exception as error:
+        pass#crayon(error)
+        #tello.land()
     
