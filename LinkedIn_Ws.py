@@ -159,7 +159,7 @@ try:
                     if showDetails:
                         ic(list(details.keys()))    
                     csv_writer = csv.DictWriter(iWannaWorkcsv, fieldnames = list(details.keys()) )
-                    
+                     
                       
                     csv_writer.writerow(job[id])
             blank()
