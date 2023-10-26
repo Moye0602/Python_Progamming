@@ -19,7 +19,7 @@ while True:
 
     try:
         crayon('my list of functions will go here functions will go here','green')
-        options=['Timer','Get Wifi'] 
+        options=['Timer','Get Wifi','Ping Sweep'] 
         for option in range(0,len(options)):
             print('>'+str(option+1)+': '+options[option])
         option=int(input('what function do you want?: '))
@@ -30,6 +30,9 @@ while True:
             timeout(timer)
         elif option==2:
             get_wifi()
+        elif option==3:
+            rootIP=input('what is the IP scheme?: ')
+            ping_sweep(rootIP)
     except KeyboardInterrupt as exceptioncode:
         
         crayon('\n','User Interuption')

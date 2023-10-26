@@ -148,6 +148,37 @@ def get_wifi():
 
 ########################################
 
+########################################
+def ping_sweep(ip_range):
+    netBios={}
+    from datetime import datetime
+    import threading
+    import subprocess
+    def ping(ip,netBios):
+        command = ["ping",  ip]  # Adjust options for your OS, -n for Windows, -c for Linux
+        result = subprocess.run(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+        if "Reply" in result.stdout:
+            print(f"{ip} is up")
+            res='up'
+        elif "Reply" not in result.stdout:
+            res='dn'
+        netBios[ip]=res
+        return netBios
+    threads = []
+    for i in range(1, 256):
+        ip = f"{ip_range}.{i}"
+        thread = threading.Thread(target=ping, args=(ip,netBios))
+        threads.append(thread)
+        thread.start()
+
+    for thread in threads:
+        thread.join()
+    netBios={key: netBios[key] for key in sorted(netBios)}
+    with open('network_info','w') as networkMap:
+        networkMap.write('netStats='+str(netBios)+'\ntimeStamp="'+str(datetime.now())+'"')
+    return netBios
+########################################
+
 ########################################    
 def internal_copy(name):
     """ When writing to a file place this after all other writes have occured with the filename
