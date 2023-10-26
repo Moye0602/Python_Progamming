@@ -1,5 +1,8 @@
 import csv
 import sys,subprocess
+from icecream import ic
+from pprint import *
+### this is a stand alone script with only normal imports
 while 1:
     print('loading dependencies')
     try:
@@ -120,54 +123,62 @@ while checks>0:
                 print('>'*4,home['Address'],home)
                 print('///')
                 prev_link=link_url
-                with open('Redfin_VA.csv','a') as Redfin:
+                with open('Redfin'+area+'.csv','a') as Redfin:
                     csv_writer = csv.DictWriter(Redfin, fieldnames = fieldnames )
-                    try:
+                    #try:
+                    if 'List Price' in home['HomeFacts']:
                         price=int(home['HomeFacts']['List Price'].replace("$", "").replace(",", ""))
-                    except:
-                        print(home['HomeFacts'])
-                        user=input('push a key to continue')
-                    sqft=0
-                    try:
-                        sqft=int(home['Sq Ft'].replace(",", ""))
-                    except:
-                        pass
-                    store['id']=id
-                    store['Property Type']=home['HomeFacts']['Property Type']
-                    store['Address']=home['Address']
-                    store['City']=home['City']
-                    store['State']=home['State']
-                    store['Zip Code']=home['Zip Code']
-                    store['Price']=price
-                    store['Beds']=home['Beds']
-                    store['Baths']=home['Baths']
-                    store['Sq Ft']=sqft
-                    try:
-                        store['Location']=home['HomeFacts']['Community']
-                    except KeyError:
-                        store['Location']=None
-                    try:                    
-                        store['Lot Size']=int(home['HomeFacts']['Lot Size'].replace(",", "").replace(" Sq. Ft.", ""))
-                    except ValueError:
-                        store['Lot Size']=home['HomeFacts']['Lot Size']
-                    except:
-                        store['Lot Size']=0
-                    store['Year Built']=home['HomeFacts']['Year Built']
-                    if 'hour' in home['HomeFacts']['Time on Redfin']:
-                        store['Days on Market']=0
-                    else:
-                        store['Days on Market']=home['HomeFacts']['Time on Redfin'].replace('days',"")
-                    store['$/Square Feet']=round(price/sqft,2)
-                    try:
-                        store['HOA / Month']=home['HomeFacts']['HOA Dues'].replace('$',"").replace('/month','')
-                    except:
-                        store['HOA / Month']=0
-                    store['URL']=url
-                    #parsedHomes[store['Address']]=store
-                    
-                    print(store)
-                    print()
-                    csv_writer.writerow(store)
+                    #except Exception as error:
+                    #    ic(error)
+                    #    print(home['HomeFacts'])
+                    #    user=input('push a key to continue')
+                        sqft=0
+                        try:
+                            sqft=int(home['Sq Ft'].replace(",", ""))
+                        except:
+                            pass
+                        
+                        try:
+                            store['id']=id
+                            store['Property Type']=home['HomeFacts']['Property Type']
+                            store['Address']=home['Address']
+                            store['City']=home['City']
+                            store['State']=home['State']
+                            store['Zip Code']=home['Zip Code']
+                            store['Price']=price
+                            store['Beds']=home['Beds']
+                            store['Baths']=home['Baths']
+                            store['Sq Ft']=sqft
+                            try:
+                                store['Location']=home['HomeFacts']['Community']
+                            except KeyError:
+                                store['Location']=None
+                            try:                    
+                                store['Lot Size']=int(home['HomeFacts']['Lot Size'].replace(",", "").replace(" Sq. Ft.", ""))
+                            except ValueError:
+                                store['Lot Size']=home['HomeFacts']['Lot Size']
+                            except:
+                                store['Lot Size']=0
+                            store['Year Built']=home['HomeFacts']['Year Built']
+                            if 'hour' in home['HomeFacts']['Time on Redfin']:
+                                store['Days on Market']=0
+                            else:
+                                store['Days on Market']=home['HomeFacts']['Time on Redfin'].replace('days',"")
+                            store['$/Square Feet']=round(price/sqft,2)
+                            try:
+                                store['HOA / Month']=home['HomeFacts']['HOA Dues'].replace('$',"").replace('/month','')
+                            except:
+                                store['HOA / Month']=0
+                            store['URL']=url
+                            #parsedHomes[store['Address']]=store
+                            
+                            print(store)
+                            print()
+                            csv_writer.writerow(store)
+                        except Exception as error: 
+                            ic(error)
+                            pprint(home['HomeFacts'])
+                            pass
                 checks=2000
             else:
                 checks-=1
@@ -180,7 +191,7 @@ while checks>0:
             
         
     except KeyboardInterrupt:# to be changed upon hitting an error
-        print('User stopped process')
+        print('<'*5,'User stopped process','>'*5)
         break
     print('checks remaining:',checks)
 if 0:
