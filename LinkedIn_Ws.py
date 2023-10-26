@@ -4,7 +4,7 @@ from Admin import*
 from icecream import *
 from pprint import *
 showDetails=0
-showSave=0
+showSave=0 
 while 1:
     print('loading dependencies')
     try:
