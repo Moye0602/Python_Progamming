@@ -7,7 +7,7 @@ showDetails=0
 showSave=0 
 while 1:
     print('loading dependencies')
-    try:
+    try: 
         import requests
         from bs4 import BeautifulSoup
         import pandas as pd
