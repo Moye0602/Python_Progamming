@@ -2,6 +2,8 @@ import csv
 import sys,subprocess
 from icecream import ic
 from pprint import *
+from Admin import *
+
 ### this is a stand alone script with only normal imports
 while 1:
     print('loading dependencies')
@@ -24,10 +26,10 @@ while 1:
 
 # Extract and print the URLs
 origin_source='https://www.redfin.com/city/10201/NV/Las-Vegas/filter/property-type=house+multifamily,min-price=300k,max-price=350k,min-beds=2,min-baths=1.5,status=active,viewport=36.30994:35.89273:-114.82616:-115.61786'
-origin_source='https://www.redfin.com/city/12839/DC/Washington-DC/filter/property-type=house,max-price=500k,min-beds=2,min-baths=1.5,exclude-age-restricted'
-area='DC_Area2'
-#origin_source='https://www.redfin.com/city/16657/TX/San-Antonio/filter/property-type=house,max-price=500k,min-beds=2,min-baths=1.5,exclude-age-restricted'
-#area='TX_San_Antonio'
+#origin_source='https://www.redfin.com/city/12839/DC/Washington-DC/filter/property-type=house,max-price=500k,min-beds=2,min-baths=1.5,exclude-age-restricted'
+#area='_DC_Area2'
+origin_source='https://www.redfin.com/city/16657/TX/San-Antonio/filter/property-type=house,max-price=500k,min-beds=2,min-baths=1.5,exclude-age-restricted'
+area='TX_San_Antonio'
 #origin_source='https://www.redfin.com/city/3104/AZ/Chandler/filter/property-type=house,max-price=500k,min-beds=2,min-baths=1.5,exclude-age-restricted'
 #area='AZ_Chandler'
 #origin_source='https://www.redfin.com/city/23010/VA/Fort-Belvoir/filter/property-type=house,max-price=500k,min-beds=2,min-baths=1.5,exclude-age-restricted,viewport=39.50773:38.47884:-76.11495:-77.9634'
@@ -44,7 +46,7 @@ def page_request(url):
 
     # Parse the HTML content using BeautifulSoup
     soup = BeautifulSoup(response.content, "html.parser")
-    print(soup)
+    #print(soup)
     elements= soup.find_all("div",class_="statsValue")#[0].get_text(),
     tablelab=(soup.find_all("span",class_="table-label"))
     tableval=(soup.find_all("div",class_="table-value"))
@@ -111,21 +113,23 @@ while checks>0:
         for link in link_elements:
 #link to the individual page        
             link_url = link.get('href')
+            crayon(link_url)
             if prev_link!=link_url and link_url and '/home/' in link_url:  # Check if the link has an href attribute
                 id+=1
-                print(id,link_url)
+                print(id,link_url)#keep
                 url='https://www.redfin.com'+link_url
                 home=page_request(url)
                 allHomes[home['Address']]=home
 
                 #allHomes[id]=home #alternate that uses the id number rather than home address
                 #print(allHomes) 
-                print('>'*4,home['Address'],home)
+                print('>'*4,home['Address'],home)#keep
                 print('///')
                 prev_link=link_url
                 with open('Redfin'+area+'.csv','a') as Redfin:
-                    csv_writer = csv.DictWriter(Redfin, fieldnames = fieldnames )
+                    
                     #try:
+                    
                     if 'List Price' in home['HomeFacts']:
                         price=int(home['HomeFacts']['List Price'].replace("$", "").replace(",", ""))
                     #except Exception as error:
@@ -174,6 +178,8 @@ while checks>0:
                             
                             print(store)
                             print()
+                            #ic(store)
+                            csv_writer = csv.DictWriter(Redfin, fieldnames = fieldnames )
                             csv_writer.writerow(store)
                         except Exception as error: 
                             ic(error)
