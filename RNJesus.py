@@ -1,7 +1,7 @@
 from Admin import*
 import random
 from datetime import datetime
-while 1:
+while 1: 
     try:
         myNumber=random.randint(0,100000)
         print(myNumber)
