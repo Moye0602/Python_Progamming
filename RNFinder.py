@@ -3,10 +3,8 @@ from importlib import reload
 import threading
 from icecream import*
 from datetime import datetime
-import schedule
 max_threads=4
 max_range=100000
-
 timeout(3)
 def guessingMachine(start=0,end=100,multi='solo',thread_count=1):
     if thread_count>1:
@@ -23,8 +21,19 @@ def guessingMachine(start=0,end=100,multi='solo',thread_count=1):
         if i==hiddenVal:
             crayon(['found it:',i,'time elapsed:',datetime.now()-startTime])
             with open('foundit.py','a') as found:
+                if 0:
+                    import foundit 
+                    reload(foundit)
+                    from foundit import found
+                  #  if found['Multi/Solo']=='multi':
+                 #       found[]
+                   # elif found['Multi/Solo']=='solo':
+                #scoreBoard={'Time':'Multi/Solo':multi,'Threads':thread_count}}
                 foundIt={str(datetime.now()-startTime):{'Value':i,'Multi/Solo':multi,'Threads':thread_count}}
+                
+                
                 found.write('\n'+'found='+str(foundIt)+'\n')
+
     
 #for i in range(max_threads):
 #    print(i*(max_range/max_threads),(i+1)*(max_range/max_threads),i*(max_range/max_threads)-(i+1)*(max_range/max_threads))
@@ -32,7 +41,7 @@ guesses={i for i in range (0,max_range)}
 try:
     while 1:
         if 0:#multilane
-            multi='multi' 
+            multi='multi'
             threads=[]
             for whoami in range(0, max_threads):
                 print(whoami*10000,(whoami+1)*0000)

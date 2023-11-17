@@ -140,11 +140,11 @@ if 1:
 #                y1_11= data[dates[10]]
 #                ax2.plot(x, y1_11, label=dates[10])
             ax1.set_xlim(left=max(x-480),right=max(x+15))
-            ax1.legend(loc='upper left')
+            #ax1.legend(loc='upper left')
             ax1.plot(x_vals,y_vals)
 
             ax2.set_xlim(left=max(x-480),right=max(x+15))
-            ax2.legend(loc='upper left')
+            #ax2.legend(loc='upper left')
             ax2.plot(x_vals,y_vals)
 
         plt.tight_layout()
