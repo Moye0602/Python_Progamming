@@ -4,7 +4,7 @@ pygame.init()
 screen = pygame.display.set_mode((800,400))
 pygame.display.set_caption('Runner')
 clock= pygame.time.Clock()
- 
+  
 test_surface = pygame.Surface((200,100))
 test_surface.fill('Red')
 while 1:
