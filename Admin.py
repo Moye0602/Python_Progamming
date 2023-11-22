@@ -42,31 +42,35 @@ def crayon(statement='>>here i am<<',color='yellow'):
 
 ########################################
 def timeout(Tminus):
-    def convert(ttime):
-        day = ttime // (60*60*24)
-        ttime = ttime % (24 * 3600)
-        hour = ttime // 3600
-        ttime %= 3600
-        minutes = ttime // 60
-        ttime %=60
-        seconds = ttime
-        return "%d:%d:%d:%d" % (day,hour, minutes, seconds)
-    while 0<Tminus:
-        crayon(['Timeout',convert(round(Tminus,2)) ,'seconds remaining                                  '])
-        print(end="\033[F"*(1))
-        TminusStart=Tminus
-        Tminus-=1
-        time.sleep(round(TminusStart-Tminus,2))
-    blank()
+    #try:
+        def convert(ttime):
+            day = ttime // (60*60*24)
+            ttime = ttime % (24 * 3600)
+            hour = ttime // 3600
+            ttime %= 3600
+            minutes = ttime // 60
+            ttime %=60
+            seconds = ttime
+            return "%d:%d:%d:%d" % (day,hour, minutes, seconds)
+        while 0<Tminus:
+            crayon(['Timeout',convert(round(Tminus,2)) ,'seconds remaining                                  '])
+            print(end="\033[F"*(1))
+            TminusStart=Tminus
+            Tminus-=1
+            time.sleep(round(TminusStart-Tminus,2))
+        blank()
+    #except KeyboardInterrupt:
+     #   restart_file()
 ########################################
 
 ########################################
-def restart_file(auto=False):
+def restart_file(auto=False,clear=False):
     '''place at the end of a program either at the end of a loop or in an exception.
     when called, press "y" to restart or 'n' to exit the program'''
     import gc,sys,subprocess
     import keyboard
-    subprocess.call(["cmd", "/c", "cls"])
+    if clear:
+        subprocess.call(["cmd", "/c", "cls"])
     print('restart file? y/n ')
     while 1:
         try:
@@ -149,7 +153,25 @@ def get_wifi():
 ########################################
 
 ########################################
-def ping_sweep(ip_range):
+def ping_sweep(ip_range='0'):
+    print()
+    if ip_range=='0':
+        crayon(['hunting mode'],'cyan')
+        import psutil
+        interfaces = psutil.net_if_addrs()
+        for interface, addrs in interfaces.items():
+            
+            if interface=='Wi-Fi':
+                for addr in addrs:
+                    print(f"Interface: {interface}")
+                    if '.' in addr.address:
+                        crayon(['Address:', addr.address])
+                        ip_range=str(addr.address[:11])
+                    else:
+                        print('Address:', addr.address)
+            
+    else:
+        crayon(['ip_range:',str(ip_range)+'.0-255'])
     netBios={}
     from datetime import datetime
     import threading
@@ -176,6 +198,10 @@ def ping_sweep(ip_range):
     netBios={key: netBios[key] for key in sorted(netBios)}
     with open('network_info','w') as networkMap:
         networkMap.write('netStats='+str(netBios)+'\ntimeStamp="'+str(datetime.now())+'"')
+    crayon(['task complete','>'*20])
+    for host in netBios:
+        if netBios[host]=='dn':
+            print('host:',host,'state:',netBios[host])
     return netBios
 ########################################
 
@@ -199,6 +225,18 @@ def internal_copy(name):
 ########################################
 
 if __name__=='__main__':
+    from icecream   import*
+
+    import psutil
+    interfaces = psutil.net_if_addrs()
+    for interface, addrs in interfaces.items():
+        print(f"Interface: {interface}")
+        if interface=='Wi-Fi':
+            for addr in addrs:
+                if '.' in addr.address:
+                    print(f"  Address: {addr.address}")
+                    ip_range=str(addr.address[:11])
+    print(ip_range)
     print('I am main')
     m=[
         input('words'),
@@ -206,6 +244,7 @@ if __name__=='__main__':
     ]
     
 ########################################
-
+##WMIC 
+# find this and learn it
 ########################################
 

@@ -32,12 +32,17 @@ while True:
             get_wifi()
         elif option==3:
             rootIP=input('what is the IP scheme?: ')
-            ping_sweep(rootIP)
+            if rootIP:
+                ping_sweep(rootIP)
+            else:
+                ping_sweep()
+        elif option==999:
+            restart_file(True)
     except KeyboardInterrupt as exceptioncode:
         
         crayon('\n','User Interuption')
         crayon(exceptioncode)
-        restart_file()
+        #restart_file()
     except Exception as exceptioncode:
         
         crayon(exceptioncode)

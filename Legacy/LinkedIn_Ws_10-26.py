@@ -3,11 +3,11 @@ import sys,subprocess
 from Admin import*
 from icecream import *
 from pprint import *
-showDetails=0
-showSave=0 
+showDetails=1
+showSave=0
 while 1:
     print('loading dependencies')
-    try: 
+    try:
         import requests
         from bs4 import BeautifulSoup
         import pandas as pd
@@ -40,9 +40,9 @@ def page_request(url):
     response = requests.get(url)
     # Parse the HTML content using BeautifulSoup
     soup = BeautifulSoup(response.content, "html.parser")
-
-    elements= soup.find_all("a",class_="base-card__full-link")
+    elements= soup.find_all("a")#,class_="base-card__full-link")
     #print(soup.find_all())
+    #pprint(elements)
     jobs={}
     num=0
     for i in elements:
@@ -50,8 +50,8 @@ def page_request(url):
         jobs[num]={'Link':i.get('href')}
     return jobs
 
+#page_request(origin_source+'25')
 #>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-
 base_dict={ 'Role':None,'Link':None,'Salary':None,'datePosted':None,
                 'postExperiation':None,'educationReqs':None,
                 'experienceReqs':None,'skillReqs':None,'employemenType':None,           
@@ -82,7 +82,6 @@ with open('LinkedIn.csv','w') as iWannaWorkcsv:
 # we can put anything here that is python readable
 with open('LinkedIn_jobs.py','w') as iWannaWork:
     crayon('New blank python file created','green')
-
 #>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 try:
@@ -91,15 +90,22 @@ try:
     job={}
     for i in range(1,pageMax):
         #for pages one to the value of pageMax, do the following instructions
+        
         print('\n','Page:',i,'<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<')
         jobs = page_request(origin_source+str(page*i))
+        
         #request all html data from the link found
         if showDetails:
-            ic(jobs)
+            1#ic(jobs)
+            
         for num in jobs:
             #for all jobs found in our request, search the HTML content using BeautifulSoup
-            soup = BeautifulSoup(requests.get(jobs[num]['Link']).content, "html.parser")
+            
+            
+            elements=None
             try:
+                soup = BeautifulSoup(requests.get(jobs[num]['Link']).content, "html.parser")
+                
                 elements= soup.find_all('script', type='application/ld+json')
                 #find anything matching the tag"script" and data type "'application/ld+json'"
                 if len(elements)>0:
@@ -111,22 +117,13 @@ try:
                         #text conversion
                     elements.split('":')
                         #split at the ' ": '
-                    crayon(type(elements))
-                    crayon(elements)
                     elements=json.loads(elements)
-                    print('>>>>>>')
-                    crayon(type(elements))
-                    crayon(elements,'blue')
-                    timeout(90000)
                     #json used to convert the string output to a dictionary
-                    #ic(base_dict )
+
                     job[id]={ 'Role':None,'Link':None,'Salary':None,'datePosted':None,
                 'postExperiation':None,'educationReqs':None,
                 'experienceReqs':None,'skillReqs':None,'employemenType':None,           
-                'Industry':None,'Location':None} 
-                    print(job,'\n'*2)
-                    #ic(job[id])
-                    #timeout(3)
+                'Industry':None,'Location':None}    
                         #copy over our blank state dictionary
                     for name in details:
                         #for each name inour dictionary translation "details", do the following
@@ -146,6 +143,7 @@ try:
                                 job[id][name]=elements[category]
                             if showDetails:
                                 ic(category)
+                                
                         if category=='link':
                             job[id][name]=jobs[num]['Link']
                             # this last category is an exception because it was created outside
@@ -154,18 +152,18 @@ try:
                         crayon([id,job[id]['Role']])
                         pprint(job[id])
                         print('\n')
-                        ic(elements)
-                        timeout(3)
+                        #timeout(9000)
             except Exception as error:
                 #errors can still occur and we want to know what they are so
-                pprint(elements)
+                if elements:
+                    pprint(elements)
                     ##pprint to show our request gave
-                print('<<<>>>')
-                ic(elements)
+                    print('<<<>>>')
+                    ic(elements)
                     #ic to idenitfy a bit easier
                 crayon(error,'red')
                     #error code of what actually happened
-                timeout(10)
+                #timeout(2)
                     #time to jump in OR ignore and let the program continue
             if id in job:
                 #now that we got the info, we can store it in a csv file with the following
@@ -173,8 +171,6 @@ try:
                     if showDetails:
                         ic(list(details.keys()))    
                     csv_writer = csv.DictWriter(iWannaWorkcsv, fieldnames = list(details.keys()) )
-                     
-                      
                     csv_writer.writerow(job[id])
             blank()
             print('ID',id, 'of',pageMax*25,'stored')
@@ -186,15 +182,15 @@ try:
         # writing the python file is a different in that we are not writing in one line at a time like csv 
         #instead, after every 25 jobs or page completion, we update the file with the changes and a timestamp
         with open('LinkedIn_jobs.py','w') as iWannaWork:
-            
             iWannaWork.write('Jobs='+str(job)+'\n'+'timeStamp="'+str(datetime.now())+'"')
         if showSave:
             ic(iWannaWork)
             print()
             ic(iWannaWorkcsv)
+        timeout(5)
 except KeyboardInterrupt:
     1#restart_file()
 except Exception as error:
     crayon(error,'red')
-    1#restart_file()
-1#restart_file()
+    #restart_file()
+#restart_file()

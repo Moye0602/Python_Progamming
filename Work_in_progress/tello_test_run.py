@@ -3,6 +3,7 @@ import time,keyboard
 import pandas as pd
 import schedule
 from Admin import *
+from icecream import *
 lockspeed,speed,rotdegrees=True,20,5
 trainingWheelsOff=1
 telloRun=1
@@ -32,6 +33,7 @@ def drone_dynamics():
     missionDist={'x dim':tello.get_mission_pad_distance_x(),
                  'y dim':tello.get_mission_pad_distance_y(),
                  'z dim':tello.get_mission_pad_distance_z()}
+    print(gyro)
     return gyro,speed,accel,missionDist
 
 def land_and_check():
@@ -50,29 +52,30 @@ def land_and_check():
 
 if telloRun and trainingWheelsOff:
     tello = Tello()
-    SSID="60:60:1f:fd:0a:35"
-    PASS="FD0A35"
+    SSID="bc:09:1b:e5:13:98"#"bc:09:1b:e5:13:98"#"60:60:1f:fd:0a:35"
+    PASS="F0F597"#"FD0A35"
     #tello.connect_to_wifi(SSID,PASS)
-    
-    #tello.
+    #tello.get_current_state()
     tello.connect()
-
+    #print(tello.get_battery())
     initial_state={ 'Battery': tello.get_battery(),
-                'Baro':tello.get_barometer(),
-                'Height':tello.get_height(),
-                'amb temp':tello.get_temperature()
-                                                                }
+                    'Baro':tello.get_barometer(),
+                    'Height':tello.get_height(),
+                    'amb temp':tello.get_temperature()
+                    }
     print(f'Current State: {tello.get_current_state()}')
     print(f'Battery: {tello.get_battery()}%')
-    print(tello.get_barometer())
-    print(tello.get_highest_temperature(), tello.get_lowest_temperature())
+    print(tello.get_barometer(),'mmBar')
+    print(tello.get_highest_temperature(),'Maxdegrees', tello.get_lowest_temperature(),'Mindegrees')
+speed = 20
+increase,rate_up=1.1,2
 while telloRun:
     try:
         if trainingWheelsOff:
             time.time()
-            #schedule.every(1).seconds.do(drone_dynamics)
+            schedule.every(1).seconds.do(drone_dynamics)
             height=tello.get_height()
-            #print(height)
+            #print(height,height*'#')
             #if tello.get_distance_tof()<40:
             #    tello.move_back(20)
         forward,backwards=keyboard.is_pressed('up'),keyboard.is_pressed('down')
@@ -81,7 +84,7 @@ while telloRun:
         ascend,descend=keyboard.is_pressed('w'),keyboard.is_pressed('s')
         speedToggle=keyboard.is_pressed('space')
         lr, fb, ud, yv = 0, 0, 0, 0
-        speed = 20
+        
 
         if keyboard.is_pressed("left"):
             lr = -speed
@@ -106,14 +109,17 @@ while telloRun:
         if speedToggle:
             if lockspeed:
                 lockspeed=False          
-                speed=100    
+                speed=100 
+                lockspeed=100   
                 rotdegrees=25       
             else:
                 lockspeed=True
                 speed=20
+                lockspeed=20
                 rotdegrees=5
             time.sleep(.15)# buffer needed to prevent rapid switching
             if trainingWheelsOff:
+                
                 tello.set_speed(speed)
             
         
@@ -164,21 +170,39 @@ while telloRun:
                             tello.move_left(speed)
                         if first_true_direction or second_true_direction=='right':
                             tello.move_right(speed)
-                    
-                    tello.move(first_true_direction,speed)
-                    if second_true_direction!=None:
-                        tello.move(second_true_direction,speed)
-                    if any(second_true_direction=='left' or first_true_direction=='left'):
-                        
-                        tello.rotate_counter_clockwise(rotdegrees)
-                    elif any(second_true_direction=='right' or first_true_direction=='right'):
-                        tello.rotate_clockwise(rotdegrees)
-                    tello.send_rc_control(lr, fb, ud, yv)
+                    if first_true_direction:
+                        tello.move(first_true_direction,speed)
+                        #increase*=rate_up
+                        speed*=rate_up
+                        if speed>500:
+                            speed=500
+                        elif speed<lockspeed:
+                            speed=lockspeed
+                    else:
+                        speed/=rate_up**rate_up
+                    tello.set_speed(speed)
+                    if rotLeft:
+                        ic()
+                        tello.rotate_counter_clockwise(-rotdegrees)
+                    if rotRight:
+                        ic()
+                        tello.rotate_counter_clockwise(+rotdegrees)
+#################################################
+                    if 0:
+                        if second_true_direction!=None:
+                            tello.move(second_true_direction,speed)
+                        if any(second_true_direction=='left' or first_true_direction=='left'):
+                            
+                            tello.rotate_counter_clockwise(rotdegrees)
+                        elif any(second_true_direction=='right' or first_true_direction=='right'):
+                            tello.rotate_clockwise(rotdegrees)
+#################################################
+                    #tello.send_rc_control(lr, fb, ud, yv)
                 #else:
-                #    print('move in direction:',first_true_direction,second_true_direction,'@ speed',speed)
+                    print('move in direction:',first_true_direction,second_true_direction,'@ speed',speed)
         elif land:    
             if trainingWheelsOff:
-                print('land_and_check()')#3
+                land_and_check()#3
             else:
                 print('landing drone')
             break
@@ -194,4 +218,5 @@ while telloRun:
     except :# Exception as error:
         pass#crayon(error)
         #tello.land()
+    #time.sleep(.25)
     

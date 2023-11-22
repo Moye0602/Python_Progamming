@@ -52,8 +52,8 @@ def send_to_chatGPT(messages,model="gpt-3.5-turbo"):
             messages=messages,
             max_tokens=100,
             n=1,
-            stop=None,
-            temperature=0.5
+            stop=None,#causes api to stop generating further tokens
+            temperature=0.5 #range is 0-1
             #prompt=f'User:{user_input}\n{ assistant_name}',
             )
     ic()

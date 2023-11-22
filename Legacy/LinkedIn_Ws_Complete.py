@@ -4,10 +4,10 @@ from Admin import*
 from icecream import *
 from pprint import *
 showDetails=0
-showSave=0 
+showSave=0
 while 1:
     print('loading dependencies')
-    try: 
+    try:
         import requests
         from bs4 import BeautifulSoup
         import pandas as pd
@@ -111,13 +111,7 @@ try:
                         #text conversion
                     elements.split('":')
                         #split at the ' ": '
-                    crayon(type(elements))
-                    crayon(elements)
                     elements=json.loads(elements)
-                    print('>>>>>>')
-                    crayon(type(elements))
-                    crayon(elements,'blue')
-                    timeout(90000)
                     #json used to convert the string output to a dictionary
                     #ic(base_dict )
                     job[id]={ 'Role':None,'Link':None,'Salary':None,'datePosted':None,
