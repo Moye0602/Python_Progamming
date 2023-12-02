@@ -27,9 +27,11 @@ def usage(cpu_useage,mem_usage,xval=0,bars=25):
         }
         #mem_writer.csv.writerow(info)
         mem_writer.writerow(info)
-xval=0
-while 1:
-
-    usage(psutil.cpu_percent(),psutil.virtual_memory().percent,xval,bars=25)
-    xval+=1
-    time.sleep(0)
+try:
+    xval=0
+    while 1:
+        usage(psutil.cpu_percent(),psutil.virtual_memory().percent,xval,bars=25)
+        xval+=1
+        time.sleep(.25)
+except KeyboardInterrupt:
+    pass

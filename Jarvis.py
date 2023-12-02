@@ -15,7 +15,7 @@ from requests import get
 #load_dotenv()
 #OPENAI_KEY=os.getenv('OPENAI_KEY')
 
-openai.api_key='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'
+openai.api_key='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'
 
 assistant_name='Jarvis'
 
@@ -63,14 +63,14 @@ def send_to_chatGPT(messages,model="gpt-3.5-turbo"):
     timeout(20)
     return message
 messages=[{"role":"user","content":'please act like Jarvis from Iron Man'}]
-while 1:
-    text=record_text()
-        #record audi informtation
-    messages.append({"role":"user","content":text})
-        #used to keep track of the whole conversation by adding each new statement
-        #GPT records infor mation as a pair of dictionaries, user and GPT
-    #timeout
-    response=send_to_chatGPT(messages)
-    #SpeakText(messages)
-    SpeakText(response)
-    print(response)
+
+text=record_text()
+    #record audi informtation
+messages.append({"role":"user","content":text})
+    #used to keep track of the whole conversation by adding each new statement
+    #GPT records infor mation as a pair of dictionaries, user and GPT
+#timeout
+response=send_to_chatGPT(messages)
+#SpeakText(messages)
+SpeakText(response)
+print(response)
