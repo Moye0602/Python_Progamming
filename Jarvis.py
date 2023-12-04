@@ -15,7 +15,7 @@ from requests import get
 #load_dotenv()
 #OPENAI_KEY=os.getenv('OPENAI_KEY')
 
-openai.api_key='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'
+openai.api_key=None# use your own API key from Chat GPT
 
 assistant_name='Jarvis'
 
