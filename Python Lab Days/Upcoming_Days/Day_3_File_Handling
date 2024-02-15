@@ -1,0 +1,18 @@
+import Admin
+try:
+    import some_file
+except ImportError as errorcode:
+    print(errorcode)
+    print('creating file')
+    book3={'people':['john smith']}
+    with open('some_file.py','w') as write_my_file:
+        write_my_file.write('book3='+str(book3))
+    print('book3',book3)
+    Admin.restart_file()
+
+import some_file
+print('here',some_file.book3)
+print(some_file.book3['people'])
+
+
+    
