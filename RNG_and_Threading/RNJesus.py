@@ -1,10 +1,8 @@
 from Admin import*
 import random
 from datetime import datetime
-import sys
-path=__file__.split('/')
-path=('/').join(path[:-1])
-
+path=__file__.split('\\')
+path=('\\').join(path[:-1])+'\\'
 
 
 while 1: 

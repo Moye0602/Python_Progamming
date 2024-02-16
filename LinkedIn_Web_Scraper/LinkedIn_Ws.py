@@ -5,6 +5,8 @@ from icecream import *
 from pprint import *
 showDetails=0
 showSave=0 
+path=__file__.split('\\')
+path=('\\').join(path[:-1])+'\\'
 while 1:
     print('loading dependencies')
     try: 
@@ -55,7 +57,7 @@ def page_request(url):
 base_dict={ 'Role':None,'Link':None,'Salary':None,'datePosted':None,
                 'postExperiation':None,'educationReqs':None,
                 'experienceReqs':None,'skillReqs':None,'employemenType':None,           
-                'Industry':None,'Location':None}    
+                'Industry':None,'Location':None,'description':None}    
 # base_dict is a template of information for each job
 details={
             'Role':'title',
@@ -68,25 +70,26 @@ details={
             'skillReqs':'skills',
             'employemenType':'employmentType',
             'Industry':'industry',
-            'Location':'jobLocation'
+            'Location':'jobLocation',
+            'description':'description'
             }
 #details is a local dictionary used for trasnlating the information collected from LinkedIn to our dictionary
 
 
 #the first is creates a blank excel csv file with field names based on the keys from the dictionary "details"
-with open('LinkedIn.csv','w') as iWannaWorkcsv:
+with open(path+'LinkedIn.csv','w') as iWannaWorkcsv:
         csv_writer = csv.DictWriter(iWannaWorkcsv, fieldnames = list(details.keys()) )
         csv_writer.writeheader()
         crayon('New blank csv file created','green')
 #the second is creating a blank python file that will be appended to 
 # we can put anything here that is python readable
-with open('LinkedIn_jobs.py','w') as iWannaWork:
+with open(path+'LinkedIn_jobs.py','w') as iWannaWork:
     crayon('New blank python file created','green')
 
 #>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 try:
-    page,pageMax=25,8
+    page,pageMax=25,4
     id=0
     job={}
     for i in range(1,pageMax):
@@ -111,20 +114,21 @@ try:
                         #text conversion
                     elements.split('":')
                         #split at the ' ": '
-                    crayon(type(elements))
-                    crayon(elements)
+                    #crayon(type(elements))
+                    #crayon(elements)
                     elements=json.loads(elements)
-                    print('>>>>>>')
-                    crayon(type(elements))
-                    crayon(elements,'blue')
-                    timeout(90000)
+                    #print('>>>>>>')
+                    #crayon(type(elements))
+                    #crayon(elements,'blue')
+                    #timeout(90000)
                     #json used to convert the string output to a dictionary
                     #ic(base_dict )
                     job[id]={ 'Role':None,'Link':None,'Salary':None,'datePosted':None,
                 'postExperiation':None,'educationReqs':None,
                 'experienceReqs':None,'skillReqs':None,'employemenType':None,           
-                'Industry':None,'Location':None} 
-                    print(job,'\n'*2)
+                'Industry':None,'Location':None,'description':None} 
+                    #print(job[id],'\n'*2)
+                        #print job details
                     #ic(job[id])
                     #timeout(3)
                         #copy over our blank state dictionary
@@ -146,6 +150,8 @@ try:
                                 job[id][name]=elements[category]
                             if showDetails:
                                 ic(category)
+                        #pprint(elements)
+                        #timeout(9000)
                         if category=='link':
                             job[id][name]=jobs[num]['Link']
                             # this last category is an exception because it was created outside
@@ -169,7 +175,7 @@ try:
                     #time to jump in OR ignore and let the program continue
             if id in job:
                 #now that we got the info, we can store it in a csv file with the following
-                with open('LinkedIn.csv','a') as iWannaWorkcsv:
+                with open(path+'LinkedIn.csv','a') as iWannaWorkcsv:
                     if showDetails:
                         ic(list(details.keys()))    
                     csv_writer = csv.DictWriter(iWannaWorkcsv, fieldnames = list(details.keys()) )
@@ -185,7 +191,7 @@ try:
             
         # writing the python file is a different in that we are not writing in one line at a time like csv 
         #instead, after every 25 jobs or page completion, we update the file with the changes and a timestamp
-        with open('LinkedIn_jobs.py','w') as iWannaWork:
+        with open(path+'LinkedIn_jobs.py','w') as iWannaWork:
             
             iWannaWork.write('Jobs='+str(job)+'\n'+'timeStamp="'+str(datetime.now())+'"')
         if showSave:

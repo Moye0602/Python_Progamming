@@ -3,6 +3,7 @@ from Admin import*
 from icecream import*
 from pprint import*
 from datetime import datetime,timedelta
+
 degree='bachelor'
 myLocation={'State':'CA','City':'San Diego'}
 currentDate,dayrange=datetime.today(),30
@@ -40,7 +41,7 @@ for name in metrics:
             print(metrics)
 
 print(metrics)
-timeout(30)
+#timeout(30)
 try:
     for id in Jobs:
         eduMatch,payMatch,employmentMatch=0,0,0
