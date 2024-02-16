@@ -230,7 +230,7 @@ class Disney_Land():
                         child_id=self.guestlibrary[guest_id]['Children'][child]
                         self.guest_info_associate(guest_id,child_id)
                         self.household[family_num]['Family']['Children'].append(child_id)
-                
+                 
                 
                 self.household[family_num]['Family_Color']=self.colors[random.randint(0,len(self.colors)-1)]
                 crayon([family_num,self.household[family_num]],self.household[family_num]['Family_Color'])

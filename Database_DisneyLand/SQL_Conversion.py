@@ -1,4 +1,6 @@
 import pyodbc
+# 2024 02 16 work in progress, not yet started
+# this  was meant to be a connection tool to creat a SQL database through python
 
 # Specify the Microsoft Access database file path
 #db_path=
