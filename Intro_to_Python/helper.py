@@ -51,9 +51,10 @@ def timeout(Tminus=10):
 
 
 if __name__=='__main__':
-    package_names =[ "requests",'importlib','requests','icecream',
-                'pyttsx3','termcolor','keyboard',
-                'beautifulsoup4','pandas','pytz','schedule','Faker','tello-python'] 
+    package_names =[ 
+                    'icecream','pandas','Faker''tkinter','termcolor','pprint','collections'
+                    "requests",'importlib','requests''pyttsx3','keyboard',
+                    'beautifulsoup4','pytz','schedule','tello-python'] 
     for module in package_names:
         print(module)
         install_if_missing(module)
