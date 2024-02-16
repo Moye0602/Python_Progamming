@@ -1,4 +1,5 @@
 import importlib,time
+from termcolor import colored
 def install_if_missing(package_name):
     """This functions takes in a list of module names and confirms thay they exist on the current system
     if the module is missing, the function will automatically download the module."""
@@ -45,7 +46,7 @@ def crayon(statement,color='yellow'):
 
 if __name__=='__main__':
     package_names =[ "requests",'importlib','requests','icecream',
-                'pyttsx3','random','termcolor','keyboard',
+                'pyttsx3','termcolor','keyboard',
                 'beautifulsoup4','pandas','pytz','schedule','Faker','tello-python'] 
     for module in package_names:
         print(module)
